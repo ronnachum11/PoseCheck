@@ -5,18 +5,16 @@ from application import db
 
 
 class Session:
-    def __init__(self, id:str, start_time=None, end_time=None, total_time=None, focus:list=[], ratios:list=[], heatmap:list=[], mood:list=[], overall_mood:str="None", blinks:list=[], blink_rate:list=[]):
+    def __init__(self, id:str, start_time=None, end_time=None, total_time=None, screen_distance=[], slump_distance=[], tilt_distance=[], flags=[], posture_score=[]):
         self.id = str(id)
         self.start_time = start_time
         self.end_time = end_time
         self.total_time = total_time
-        self.focus = focus
-        self.ratios = ratios
-        self.heatmap = heatmap
-        self.mood = mood 
-        self.overall_mood = overall_mood
-        self.blinks = blinks
-        self.blink_rate = blink_rate
+        self.screen_distance = screen_distance # distance from screen
+        self.slump_distance = slump_distance # distance from eyes to shoulders
+        self.tilt_distance = tilt_distance # distance from ears to eyes
+        self.flags = flags
+        self.posture_score = posture_score
 
     def to_dict(self):
         return self.__dict__
@@ -27,13 +25,11 @@ class Session:
                         dictionary.get("start_time"),
                         dictionary.get("end_time"),
                         dictionary.get("total_time"),
-                        dictionary.get("focus"),
-                        dictionary.get("ratios"),
-                        dictionary.get("heatmap"),
-                        dictionary.get("mood"),
-                        dictionary.get("overall_mood"),
-                        dictionary.get("blinks"),
-                        dictionary.get("blink_rate")
+                        dictionary.get("screen_distance"),
+                        dictionary.get("slump_distance"),
+                        dictionary.get("tilt_distance"),
+                        dictionary.get("flags"),
+                        dictionary.get("posture_score"),
             )
 
     def __repr__(self):

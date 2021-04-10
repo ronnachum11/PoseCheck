@@ -14,6 +14,8 @@ import time
 import numpy as np
 from bson import ObjectId
 import base64
+import cv2
+import jsonify
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,16 +41,9 @@ def end_session(session_id):
 
 @app.route("/session", methods=["GET", "POST"])
 def session():
-    if current_user.id == "5fd5651341432c9630f95c8e":
-        current_session = current_user.get_session_by_id('5fd63ac9921dc84394b08bda')
-        session_id = current_session.id
-        header = ""
-    else:
-        current_session = Session(id=str(ObjectId()), start_time=datetime.now())
-        current_user.add_session(current_session)
-        session_id = current_session.id
-        header = "Currently Unavailable for Standard Users, Sample Data Displayed"
-    return render_template("session.html", session_id=session_id, header=header)
+    session_id = "helllo"
+    return render_template("session.html", session_id=session_id)
+    
 
 @login_required
 @app.route("/account")
@@ -92,115 +87,40 @@ def login():
     
     return render_template("login.html", form=form)
 
-@app.route("/focus", methods=["GET", "POST"])
-def focus():
-    data_url = request.values['image']
-    img_64 = data_url.replace("data:image/png;base64,", "")
-    png_as_np = np.frombuffer(base64.b64decode(img_64), dtype=np.uint8)
-    print(png_as_np.shape)
-    image_buffer = cv2.imdecode(png_as_np, cv2.IMREAD_COLOR)
-    cv2.imwrite("b64out.png",image_buffer)
-
-    
-
-    # nparr = np.fromstring(img_bytes, np.uint8)
-    # print(nparr.shape)
-    # img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    # print("SHAPE", img_np.shape)
-
-    return {"status": "failure"}, 200
-
-    # img = Image.open(BytesIO(img_bytes))
-    # img  = np.array(img)
-    # print(img.shape)
-
-    # session_id = request.get_json().get("id")
-    # session = current_user.get_session_by_id(session_id)
-    # img_64 = request.get_json().get("img")
-    
-    # img_bytes = base64.b64decode(img_64)
-    # img = Image.open(BytesIO(img_bytes))
-    # img  = np.array(img)
-    # print(img)
-    # cv2.imshow(img)
-
-
-    # print(len(img_64))
-    # decoded = base64.b64decode(img_64)
-    # img_np = np.frombuffer(decoded, np.uint8)
-    # print(img_np.shape)
-    # img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
-    # print(img is None)
-
-    # focus, ratio = focus_method(img, session.focus, session.ratios)
-
-    # current_user.update_session(session_id, {"focus": session.focus.append(focus), "ratio": session.ratios.append(ratio)})
-
-    # value = display_focus_value(focus, len(session.focus))
-
-    # print(value)
-    # return value
-
-@app.route("/strain")
-def strain():
-    session_id = request.args.get("id")
-    session = current_user.get_session_by_id(session_id)
-    img_64 = request.args.get("img")
-    img, time = None, 0
-    
-    blinks = get_blink_rate(img, time, 7, session.blinks)
-    blink_rate = current_blink_rate(blinks, 10, time)
-
-    current_user.update_session(session_id, {"blinks": session.blinks, "blink_rate": session.blink_rate.append(blink_rate)})
-
-    print("HERE")
-    return "hi"
-
-@app.route("/mood")
-def mood():
-    session_id = request.args.get("id")
-    session = current_user.get_session_by_id(session_id)
-    img_64 = request.args.get("img")
-    img = img_64.decode('base64')
-
-    mood = get_mood(img)
-    current_user.update_session(session_id, {"mood": session.mood.append(mood)})
-
-    print("HERE")
-    return "hi"
-
-@app.route("/focus-line/<string:session_id>")
-def focus_line(session_id):
-    session = current_user.get_session_by_id(session_id)
-    line, _ = update_focus_plots(session.focus, session.ratios)
-    return line
-
-@app.route("/focus-heat/<string:session_id>")
-def focus_heat(session_id):
-    session = current_user.get_session_by_id(session_id)
-    _, heat = update_focus_plots(session.focus, session.ratios)
-    return heat
-
-@app.route("/mood-line/<string:session_id>")
-def mood_line(session_id):
-    session = current_user.get_session_by_id(session_id)
-    line = plot_overall_mood(session.mood)
-    return line
-
-@app.route("/mood-pie/<string:session_id>")
-def mood_pie(session_id):
-    session = current_user.get_session_by_id(session_id)
-    pie = plot_moods(session.mood[-1])
-    return pie
-
-@app.route("/strain-line/<string:session_id>")
-def strain_line(session_id):
-    session = current_user.get_session_by_id(session_id)
-    line = blink_rate_graph(session.blink_rate, 25)
-    return line
-
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+
+import base64
+
+@app.route('/photo')
+def photo():
+    return render_template('photo.html')
+
+
+@app.route('/_photo_cap')
+def photo_cap():
+    photo_base64 = request.args.get('photo_cap')
+    header, encoded = photo_base64.split(",", 1)
+    binary_data = base64.b64decode(encoded)
+    image_name = "capture"
+
+    i = 1
+    save_name = image_name + str(i) + ".jpeg"
+    while os.path.exists(os.path.join("application", "static", "images", "captures", save_name)):
+        i += 1
+        save_name = image_name + str(i) + ".jpeg"
+
+    with open(os.path.join("application", "static", "images", "captures", save_name), "wb") as f:
+        f.write(binary_data)
+
+    if current_user.is_authenticated:
+        pass
+        # CALL PROCESSING METHOD HERE
+
+    response = {"Status": "Success"}
+
+    return response

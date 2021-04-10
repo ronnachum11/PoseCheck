@@ -11,7 +11,7 @@ html {
 }
 
 body {
-  background: linear-gradient(90deg, rgb(0, 28, 105) 0%, rgb(0, 29, 156) 30%, rgb(0, 74, 246) 100%);
+  background: linear-gradient(90deg, rgb(0, 43, 161) 0%, rgb(0, 74, 246) 30%, rgb(41, 105, 255) 100%);
 }
 
 .mcontainer {
@@ -45,11 +45,11 @@ body.fade-out {
 }
 
 .btn-color {
-  background-color: rgb(80, 41, 255);
+  background-color: rgb(41, 105, 255);
   color: white;
 }
 .btn-color:hover {
-  background-color: rgb(80, 41, 255);
+  background-color: rgb(23, 85, 255);
   color: white;
 }
 

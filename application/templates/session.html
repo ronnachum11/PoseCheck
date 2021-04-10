@@ -18,114 +18,111 @@
         <div class = "row">
             <div class="col-md-6">
                 <div class="content-div">
-                    <h1>Focus - Level Over Time + Heatmap</h1>
-                    <div class="graphs">
-                        <!-- <div id="focus-line" class="graph"></div>
-                        <div id="focus-heat" class="graph"></div>     -->
-                        <img src="{{ url_for('static', filename='images/focus_line.png') }}" class="graph-img">
-                        <img src="{{ url_for('static', filename='images/heatmap.png') }}" class="graph-img" style="margin-left: 30px">
-                    </div>
-                    <h3>Average Focus: 7.53/10</h3>
+
                 </div>                  
             </div>
             <div class = "col-md-6">
                 <div class="content-div">
-                    <h1>Eye Strain - Blink Rate Over Time</h1>
-                    <div class="graphs" class="graph">
-                        <!-- <div id=strain-line" class="graph"></div> -->
-                        <img src="{{ url_for('static', filename='images/blink_rate.png') }}" class="graph-img">
-                    </div>
-                    <h3>Eye Strain: Normal - Slightly Elevated</h3>
+
                 </div>
             </div>
         </div>
         <div class = "row">
             <div class="col-md-12">
                 <div class="content-div">
-                    <h1>Mood - Emotional Breakdown Over Time + Current</h1>
-                    <div class="graphs">
-                        <!-- <div id="mood-pie" class="graph"></div>
-                        <div id="mood-line" class="graph"></div> -->
-                        <img src="{{ url_for('static', filename='images/moods_line.png') }}" class="graph-img">
-                        <img src="{{ url_for('static', filename='images/moods_pie.png') }}" class="graph-img" style="margin-left: 30px">
-                    </div>
-                    <h3>Mood: Neutral (69.0%), Sad (15.0%)</h3>
+
                 </div>
             </div>
         </div>
-        <h5>Graphs Last Updated: 37s ago</h5>
+        <!-- <h5>Graphs Last Updated: 37s ago</h5> -->
         <div class="row">
             <a href="{{ url_for('end_session', session_id=session_id) }}" class="btn btn-red btn-wide" style="margin-top: 30px">End Session</a>
         </div>
         <div class="row" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center">
-            <video id="video" autoplay></video>
-            <canvas id="canvas" ></canvas>
+            <div id="my_photo_booth">
+                <div id="my_camera"></div>
+            
+                    <script src="{{url_for('static',filename='js/webcam.min.js')}}"></script>
+                    <script src="{{url_for('static',filename='audio/shutter.mp3')}}"></script>
+                    <script src="{{url_for('static',filename='audio/shutter.ogg')}}"></script>
+            
+                    <!-- Configure a few settings and attach camera -->
+                    <script language="JavaScript">
+                        Webcam.set({
+                            // live preview size
+                            width: 320,
+                            height: 240,
+            
+                            // device capture size
+                            dest_width: 640,
+                            dest_height: 480,
+            
+                            // final cropped size
+                            crop_width: 640,
+                            crop_height: 480,
+            
+                            // format and quality
+                            image_format: 'jpeg',
+                            jpeg_quality: 90,
+            
+                            // flip horizontal (mirror mode)
+                            flip_horiz: true
+                        });
+                        Webcam.attach( '#my_camera' );
+                    </script>
+            </div>
         </div>
     </div>
 
-
-    <script>    
-        var video = document.getElementById('video');
-        if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-                //video.src = window.URL.createObjectURL(stream);
-                video.srcObject = stream;
-                video.play();
-            });
-        }
+    <script language="JavaScript">
+        // preload shutter audio clip
+        // var shutter = new Audio();
+        // shutter.autoplay = false;
+        // shutter.src = navigator.userAgent.match(/Firefox/) ? '/static/audio/shutter.ogg' : '/static/audio/shutter.mp3';
     
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
-        var video = document.getElementById('video');
 
-        function focus_request() {
-            context.drawImage(video, 0, 0, 200, 200)
-            canvas.toBlob() = (blob) => {
-                const img = new Image();
-                $.ajax({
-                    type: "POST",
-                    url: "/focus", //I have doubt about this url, not sure if something specific must come before "/take_pic"
-                    data: { 
-                            image: window.URL.createObjectUrl(blob)
-                        }
-                    }).done(function() {
-                        console.log("FOCUS");
+        // function preview_snapshot() {
+        //     // play sound effect
+        //     try { shutter.currentTime = 0; } catch(e) {;} // fails in IE
+        //     shutter.play();
+    
+        //     // freeze camera so user can preview current frame
+        //     Webcam.freeze();
+    
+        //     // swap button sets
+        //     document.getElementById('pre_take_buttons').style.display = 'none';
+        //     document.getElementById('post_take_buttons').style.display = '';
+        // }
+    
+        // function cancel_preview() {
+        //     // cancel preview freeze and return to live camera view
+        //     Webcam.unfreeze();
+    
+        //     // swap buttons back to first set
+        //     document.getElementById('pre_take_buttons').style.display = '';
+        //     document.getElementById('post_take_buttons').style.display = 'none';
+        // }
+    
+        function save_photo() {
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+            // actually snap photo (from preview freeze).
+            Webcam.snap( function(data_uri) {
+                // display results in page
+                console.log(data_uri);
+    
+                // shut down camera, stop capturing
+                // Webcam.reset();
+    
+                $.getJSON($SCRIPT_ROOT + '/_photo_cap', {
+                    photo_cap: data_uri,
+                },function(data){
+                    var response = data.response;
                 });
-            }
-            // var request = new XMLHttpRequest();
-            // request.open('GET', '/focus?id={{ session_id }}&img=' + canvas.toDataURL(video).replace("data:image/png;base64,", ""), true);
-            // request.send();
-            // console.log("FOCUS");
-        }
     
-        function strain_request() {
-            var request = new XMLHttpRequest();
-            request.open('GET', '/strain?id={{ session_id }}&img=' + canvas.toDataURL(video).replace("data:image/png;base64,", ""), true);
-            request.send();
-            console.log("STRAIN");
-        }
-        
-        function mood_request() {
-            var request = new XMLHttpRequest();
-            request.open('GET', '/mood?id={{ session_id }}&img=' + canvas.toDataURL(video).replace("data:image/png;base64,", ""), true);
-            request.send();
-            console.log("MOOD");
+            } );
         }
 
-        function update_graphs() {
-            $("#focus-line").load("/focus-line/{{ session_id }}");
-            $("#focus-heat").load("/focus-heat/{{ session_id }}");
-            $("#strain-line").load("/strain-line/{{ session_id }}");
-            $("#mood-pie").load("/mood-pie/{{ session_id }}");
-            $("#mood-line").load("/mood-line/{{ session_id }}");
-        }
-        
-        console.log("HERE");
-        // update_graphs()
-        // window.setInterval(update_graphs, 2000)
-        // window.setInterval(focus_request, 2500);
-        // window.setInterval(strain_request, 1500);
-        // window.setInterval(mood_request, 20000);
-    
+        setInterval(save_photo, 10000)
     </script>
+
 {% endblock content %}

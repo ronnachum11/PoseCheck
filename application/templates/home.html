@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block page_styles %}
+<link rel="stylesheet" href="../static/css/home.css?v=1.3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.min.css"/>
+{% endblock page_styles %}
+
+{% block content %}
+<a id="home" class="anchor home-div-anchor"></a>
+<div id="home-div" class="content-div">
+    <h1 id="name" class="transition">PoseCheck</h1>
+    <h2>LOGO</h2>
+    <h1 id="tagline" class=" transition">Healthier Habits</h1>
+
+    <!-- <a class="btn btn-light btn-wide">Try It Out!</a> -->
+</div>
+
+<a id="about" class="anchor about-div-anchor"></a>
+<div class="container" style="width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: center;">
+    <div class="content-div">
+    <!-- <div class="container col-md-6" style="background-color: white;"> -->
+        <h1>What is PoseCheck?</h1>
+    <!-- </div> -->
+    <!-- <div class="container col-md-6" style="background-color: black;"> -->
+        <h4>
+            PoseCheck uses ML and CV to assess posture and seating position of users while working, providing real-time insights and adjustments to improve working health. This data is especially useful for people spending great amounts of time in front of computers  as COVID-19 restrictions continue, including students attending virtual school and individuals working from home. In addition to live data and adjustments provided while using the app, we also provide information regarding users' history of posture health. This includes graphs, insights, and trend analysis as we work to help users improve their posture health over time. We hope that PoseCheck helps hard-working students, freelancers, employees, and employers around the world live healthier, more productive lives.
+        </h4>
+    <!-- </div>     -->
+    </div>
+</div>
+
+<!-- <a id="contact" class="anchor contact-div-anchor"></a>
+<div class="content-div bg-grey">
+    <h1>Contact Us</h1>
+</div> -->
+{% endblock content %}

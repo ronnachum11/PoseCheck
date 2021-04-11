@@ -51,12 +51,12 @@
                 {% if not current_user.is_authenticated %}
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" href="{{ url_for('home', _anchor='about') }}">About</a>
-                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Explanation</a>
+                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Features</a>
                     </div>
                 {% else %}
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" href="{{ url_for('home', _anchor='about') }}">About</a>
-                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Explanation</a>
+                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Features</a>
                         <a class="nav-item nav-link" href="{{ url_for('start_session') }}">Check My Pose!</a>
                     </div>
                 {% endif %}

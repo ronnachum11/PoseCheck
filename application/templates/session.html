@@ -132,6 +132,11 @@ Chart.pluginService.register(horizonalLinePlugin);
                                 // flip horizontal (mirror mode)
                                 flip_horiz: true
                             });
+
+                            Webcam.on( 'error', function(err) {
+                                // an error occurred (see 'err')
+                            } );
+
                             Webcam.attach( '#my_camera' );
                         </script>
                 </div>
@@ -158,7 +163,7 @@ Chart.pluginService.register(horizonalLinePlugin);
                 contentType : "application/json"
             });
 
-            var int1 = setInterval(update_pose_image, 100)
+            var int1 = setInterval(update_pose_image, 400)
     
             } );
         }

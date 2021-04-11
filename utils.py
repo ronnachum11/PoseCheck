@@ -126,7 +126,17 @@ def getKeyPoints(frame):
     }
     return keypoints
 
+def overall_score(proximity, slump, front_tilt, head_tilt, shoulder_tilt, shoulder_width):
+    score = np.abs((proximity[-1]-proximity[0])/proximity[0])
+    score += np.abs((slump[-1]-slump[0])/slump[0])
+    score += np.abs((front_tilt[-1]-front_tilt[0])/front_tilt[0])
+    score += np.abs((head_tilt[-1]-head_tilt[0])/head_tilt[0])
+    score += np.abs((shoulder_tilt[-1]-shoulder_tilt[0])/shoulder_tilt[0])
+    score += np.abs((shoulder_width[-1]-shoulder_width[0])/shoulder_width[0])
+    return score
+
 class CheckPosture:
+
     def __init__(self, scale, key_points={}, baseline_points={}, sensitivity={}):
         self.key_points = key_points
         self.baseline_points = baseline_points
@@ -137,11 +147,11 @@ class CheckPosture:
     def set_key_points(self, key_points):
         self.key_points = key_points
 
-    def set_basline(self, baseline_points):
+    def set_baseline(self, baseline_points):
         self.baseline_points = baseline_points
         
-    def set_basline(self, baseline_points):
-        self.baseline_points = baseline_points
+    def set_sensitivity(self, sensitivity):
+        self.sensitivity = sensitivity
 
     def build_message(self):
         message = ""
@@ -209,7 +219,6 @@ class CheckPosture:
             if (v - b)/self.get_distance() > p1:
                 return [True, (v - b)/self.get_distance()]
             return [False, (v - b)/self.get_distance()]
-        
         b = self.baseline_points['Right Eye'][1] - self.baseline_points['Right Ear'][1]
         if self.key_points['Right Eye'][1] != -1 and self.key_points['Right Ear'][1] != -1:
             v = self.key_points['Right Eye'][1] - self.key_points['Right Ear'][1]
@@ -220,17 +229,17 @@ class CheckPosture:
 
     def check_head_tilt(self):
         p1 = self.sensitivity['Head Tilt'][0]
-        b = self.baseline_points['Right Ear'][1] - self.baseline_points['Left Ear'][1]
-        if self.key_points['Right Ear'][1] != -1 and self.key_points['Left Ear'][1] != -1:
-            v = self.key_points['Right Ear'][1] - self.key_points['Left Ear'][1]
+        b = self.baseline_points['Right Eye'][1] - self.baseline_points['Left Eye'][1]
+        if self.key_points['Right Eye'][1] != -1 and self.key_points['Left Eye'][1] != -1:
+            v = self.key_points['Right Eye'][1] - self.key_points['Left Eye'][1]
             if np.abs((v - b)/self.get_distance()) > p1:
                 return [True, (v - b)/self.get_distance()]
             return [False, (v - b)/self.get_distance()]
         return [False, b]
 
     def check_shoulder_tilt(self):
-        b = self.baseline_points['Right Shoulder'][1] - self.baseline_points['Left Shoulder'][1]
         p1 = self.sensitivity['Shoulder Tilt'][0]
+        b = self.baseline_points['Right Shoulder'][1] - self.baseline_points['Left Shoulder'][1]
         if self.key_points['Right Shoulder'][1] != -1 and self.key_points['Left Shoulder'][1] != -1:
             v = self.key_points['Right Shoulder'][1] - self.key_points['Left Shoulder'][1]
             if np.abs((v - b)/self.get_distance()) > p1:
@@ -243,7 +252,7 @@ class CheckPosture:
         b = self.baseline_points['Right Shoulder'][0] - self.baseline_points['Left Shoulder'][0]
         if self.key_points['Right Shoulder'][0] != -1 and self.key_points['Left Shoulder'][0] != -1:
             v = self.key_points['Right Shoulder'][0] - self.key_points['Left Shoulder'][0]
-            if (np.abs(v) + b)/self.get_distance()  < p1:
-                return [True, (np.abs(v) + b)/self.get_distance()]
-            return [False, (np.abs(v) + b)/self.get_distance()]
-        return [False, b]
+            if (np.abs(v) - np.abs(b))/self.get_distance()  < p1:
+                return [True, (np.abs(v) - np.abs(b))/self.get_distance()]
+            return [False, (np.abs(v) - np.abs(b))/self.get_distance()]
+        return [False, np.abs(b)]

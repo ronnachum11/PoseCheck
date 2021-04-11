@@ -125,16 +125,37 @@
             // actually snap photo (from preview freeze).
             Webcam.snap( function(data_uri) {
                 // display results in page
-                console.log(data_uri);
+                // console.log(data_uri);
     
                 // shut down camera, stop capturing
                 // Webcam.reset();
-    
-                $.getJSON($SCRIPT_ROOT + '/_photo_cap/{{ session_id }}', {
-                    photo_cap: data_uri,
-                },function(data){
-                    var response = data.response;
-                });
+
+            // var xhr = new XMLHttpRequest();
+            // var url = $SCRIPT_ROOT + '/photo_analysis/{{ session_id }}';
+            // xhr.open("POST", url, true);
+            // xhr.setRequestHeader("Content-Type", "application/json");
+            // xhr.onreadystatechange = function () {
+            //     if (xhr.readyState === 4 && xhr.status === 200) {
+            //         var json = JSON.parse(xhr.responseText);
+            //     }
+            // };
+            // var data = JSON.stringify({"image": data_uri});
+            // xhr.send(data);
+
+            $.ajax({
+                type: "POST",
+                url: $SCRIPT_ROOT + '/photo_analysis/{{ session_id }}',
+                data: JSON.stringify({"image": data_uri}),
+                success: function(){},
+                dataType: "json",
+                contentType : "application/json"
+            });
+
+                // $.getJSON($SCRIPT_ROOT + '/photo_analysis/{{ session_id }}', {
+                //     photo_cap: data_uri,
+                // },function(data){
+                //     var response = data.response;
+                // });
     
             } );
         }

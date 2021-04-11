@@ -108,7 +108,7 @@ def logout():
 def photo():
     return render_template('photo.html')
 
-@app.route('/_photo_cap/<string:session_id>')
+@app.route('/photo_analysis/<string:session_id>', methods=["GET", "POST"])
 def photo_cap(session_id):
     if not current_user.is_authenticated:
         return {"Status": "Error"}
@@ -120,7 +120,9 @@ def photo_cap(session_id):
         print(f"{k}: {v}")
     print("\n\n")
 
-    photo_base64 = request.args.get('photo_cap')
+    json = request.get_json()
+    photo_base64 = json["image"]
+
     header, encoded = photo_base64.split(",", 1)
     binary_data = base64.b64decode(encoded)
     nparr = np.fromstring(binary_data, np.uint8)
@@ -153,7 +155,7 @@ def photo_cap(session_id):
         shoulder_width_flag, shoulder_width_val = posture_checker.check_shoulder_width()
 
         proximity_data.append(proximity_val); slump_data.append(slump_val); forward_tilt_data.append(forward_tilt_val), head_tilt_data.append(head_tilt_val), shoulder_tilt_data.append(shoulder_tilt_val), shoulder_width_data.append(shoulder_tilt_val)
-        flags.append([(proximity_flag, slump_flag, forward_tilt_flag, head_tilt_flag, shoulder_tilt_flag, shoulder_width_flag)])
+        flags.append([proximity_flag, slump_flag, forward_tilt_flag, head_tilt_flag, shoulder_tilt_flag, shoulder_width_flag])
 
         current_user.update_session(session_id, **{"proximity": proximity_data, "slump": slump_data, "forward_tilt": forward_tilt_data, "head_tilt": head_tilt_data, "shoulder_tilt": shoulder_tilt_data, "shoulder_width": shoulder_width_data, "flags": flags})
 
@@ -167,6 +169,6 @@ def photo_cap(session_id):
         # print(key_points)
         # print("\n\n")
 
-    response = {"Status": "Success"}
+    response = {"Status": "Success"}, 200
 
     return response

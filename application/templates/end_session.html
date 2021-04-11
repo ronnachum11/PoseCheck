@@ -7,16 +7,9 @@
 
 {% block content %}
     <div id="start-session-div">
-        <h1>Great Session</h1>
-        <h3>Session Summary:</h3>
+        <h1>Great Posture Session!</h1>
+        <a class="btn-color btn-wide" href="{{ url_for('session_summary', session_id=session_id) }}" style="margin-top: 10px">See Graphs</a>
     </div>
-
-    <div id="main-div">
-        <div id="graphs">
-            
-        </div>
-    </div>
-
 
     <script>
         function update_graphs() {

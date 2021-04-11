@@ -5,3 +5,48 @@
 @import url("https://fonts.googleapis.com/css2?family=Open%20Sans&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
+
+.col-md-12 {
+    width: 100%;
+}
+
+.row {
+    height: 300px;
+}
+
+.col-md-6 {
+    padding-left: 215px;
+    padding-right: 215px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.col-md-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 72px;
+    text-align: center;
+}
+
+h3 {
+    font-size: 30px;
+    text-align: center;
+}
+
+h4 {
+    font-size: 18px;
+    text-align: center;
+}
+
+#overall-title {
+    padding-left: 400px;
+    padding-right: 400px;
+}

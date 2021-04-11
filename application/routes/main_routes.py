@@ -45,6 +45,23 @@ def end_session(session_id):
 
     return render_template("end_session.html", session_id=session_id)
 
+@app.route("/session-summary/<string:session_id>")
+def session_summary(session_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    session = current_user.get_session_by_id(session_id)
+    if session is None:
+        return redirect(url_for('home'))
+
+    data = session.to_dict()
+    proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
+
+    return render_template("session_summary.html", proximity_data=proximity_data, slump_data=slump_data, forward_tilt_data=forward_tilt_data, head_tilt_data=head_tilt_data, shoulder_tilt_data=shoulder_tilt_data, shoulder_width_data=shoulder_width_data)
+
+    
+
+
 @app.route("/session", methods=["GET", "POST"])
 def session_setup():
     if not current_user.is_authenticated:
@@ -75,7 +92,7 @@ def session(session_id):
 def account():
     user = current_user
     sessions = current_user.sessions
-    info = [[session.start_time.strftime('%I:%M')] for session in sessions]
+    info = [[session.id, session.start_time.strftime('%I:%M')] for session in sessions]
     return render_template("account.html", user=user, sessions=sessions, info=info)
 
 @app.route("/register", methods=["GET", "POST"])
@@ -138,7 +155,7 @@ def update_graphs(session_id):
 
 @app.route('/features')
 def features():
-    return redirect(url_for('home'))
+    return render_template("features.html")
 
 @app.route('/photo_analysis/<string:session_id>', methods=["GET", "POST"])
 def photo_cap(session_id):

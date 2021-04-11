@@ -1,0 +1,409 @@
+{% extends "layout.html" %}
+
+{% block page_styles %}
+<link rel="stylesheet" href="../static/css/session.css?v=1.3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.min.css"/>
+{% endblock page_styles %}
+
+{% block head_scripts %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script> 
+<script type="text/javascript">
+var horizonalLinePlugin = {
+    afterDraw: function(chartInstance) {
+        var yScale = chartInstance.scales["y-axis-0"];
+        var canvas = chartInstance.chart;
+        var ctx = canvas.ctx;
+        var index;
+        var line;
+        var style;
+        if (chartInstance.options.horizontalLine) {
+            for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
+                line = chartInstance.options.horizontalLine[index];
+                if (!line.style) {
+                style = "rgba(169,169,169, .6)";
+                } else {
+                style = line.style;
+                }
+                if (line.y) {
+                yValue = yScale.getPixelForValue(line.y);
+                } else {
+                yValue = 0;
+                }
+                ctx.lineWidth = 3;
+                if (yValue) {
+                ctx.beginPath();
+                ctx.moveTo(0, yValue);
+                ctx.lineTo(canvas.width, yValue);
+                ctx.strokeStyle = style;
+                ctx.stroke();
+                }
+                if (line.text) {
+                ctx.fillStyle = style;
+                ctx.fillText(line.text, 0, yValue + ctx.lineWidth);
+                }
+            }
+            return;
+        };
+    }
+};
+Chart.pluginService.register(horizonalLinePlugin);
+</script>
+
+<script src="https://unpkg.com/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+<script src="https://unpkg.com/@tensorflow-models/posenet@2.2.2/dist/posenet.min.js"></script>
+{% endblock head_scripts %}
+
+{% block content %}
+<h1>Your Posture Session Summary</h1>
+<div id="main-div">
+    <div id="graphs">
+        <div class = "row" style="height:200px; margin-bottom: 150px">
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Screen Proximity</h2>
+                    <canvas id="proximity" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("proximity");
+                        var values = {{proximity_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold"
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }                   }
+                        });
+                    </script>
+                </div>                  
+            </div>
+            <div class = "col-md-6">
+                <div class="content-div">
+                    <h2>Slump Detection</h2>
+                    <canvas id="slump" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("slump");
+                        var values = {{slump_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold"
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }                   }
+                
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class = "row"  style="height:200px; margin-bottom: 150px">
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Forward Tilt</h2>
+                    <canvas id="forward-tilt" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("forward-tilt");
+                        var values = {{forward_tilt_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold",
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }
+                        }
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Head Tilt</h2>
+                    <canvas id="head-tilt" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("head-tilt");
+                        var values = {{head_tilt_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold"
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }                   }
+                
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class = "row"  style="height:200px; margin-bottom: 150px">
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Shoulder Tilt</h2>
+                    <canvas id="shoulder-tilt" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("shoulder-tilt");
+                        var values = {{shoulder_tilt_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold"
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }                   }
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Shoulder Width</h2>
+                    <canvas id="shoulder-width" ></canvas>
+                    <script>
+                        var ctx = document.getElementById("shoulder-width");
+                        var values = {{shoulder_width_data}};
+                        var indices = [...Array(values.length).keys()];
+                        var threshold = 7;
+                        var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: indices,
+                            datasets: [
+                            {
+                                label: "Value",
+                                data: values,
+                                borderColor: 'rgb(255, 255, 255)',
+                                borderWidth: 1.3,
+                                fill: false,
+                                lineTension: 0
+                            }
+                            ]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            "horizontalLine": [{
+                            "y": threshold,
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Threshold"
+                            }, {
+                            "y": values[0],
+                            "style": "rgba(0, 255, 0, .4)",
+                            "text": "Base",
+                            "fontSize": 14
+                            }],
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }],
+                                xAxes: [{
+                                    ticks: {
+                                        display: false
+                                    }
+                                }]
+                            }                   }
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<a class="btn-color btn-wide" href="{{ url_for('account') }}">Account</a>
+
+{% endblock content %}

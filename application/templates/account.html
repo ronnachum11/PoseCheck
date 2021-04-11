@@ -8,11 +8,15 @@
 {% block content %}
 <h1>Account</h1>
 <div class="container">
-    <h3>Sessions:</h3>
+    <h3 style="margin-bottom: 25px">Email: {{ current_user.email }}</h3>
+
     {% for data in info %}
         <div class="content-div">
-            <h2>Session {{ loop.index }} - {{ data[0] }}</h2>
+            <h2>Session {{ loop.index }} - {{ data[1] }}</h2>
+            <a class="btn-color btn-wide" href="{{ url_for('session_summary', session_id=data[0]) }}">See Graphs</a>
         </div>
     {% endfor %}
+
+    <h3>More long-term insights coming soon!</h3>
 </div>
 {% endblock content %}

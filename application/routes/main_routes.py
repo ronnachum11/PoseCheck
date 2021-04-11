@@ -43,10 +43,10 @@ def end_session(session_id):
     # SHOW OVERALL GRAPHS
     # SAVE ALL DATA TO DATABASE
 
-    return render_template("end_session.html")
+    return render_template("end_session.html", session_id=session_id)
 
 @app.route("/session", methods=["GET", "POST"])
-def session():
+def session_setup():
     if not current_user.is_authenticated:
         return redirect(url_for('home'))
 
@@ -54,9 +54,20 @@ def session():
     current_user.add_session(current_session)
     session_id = current_session.id
     data = current_session.to_dict()
-    proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
 
-    return render_template("session.html", session_id=session_id,proximity_data = proximity_data, slump_data = slump_data, forward_tilt_data = forward_tilt_data, head_tilt_data = head_tilt_data, shoulder_tilt_data = shoulder_tilt_data, shoulder_width_data = shoulder_width_data)
+    return redirect(url_for('session', session_id=session_id))
+
+@app.route("/session/<string:session_id>", methods=["GET", "POST"])
+def session(session_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    current_session = current_user.get_session_by_id(session_id)
+
+    if current_session is None:
+        return redirect(url_for('home'))
+
+    return render_template("session.html", session_id=session_id)
     
 
 @login_required

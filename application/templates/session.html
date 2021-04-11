@@ -164,8 +164,8 @@ Chart.pluginService.register(horizonalLinePlugin);
         function update_graphs() {
             $("#graphs").load("/update_graphs/" + "{{ session_id|safe }}");
         }
-        setInterval(save_photo, 5000)
-        setInterval(update_graphs, 5000);
+        setInterval(save_photo, 7000)
+        setInterval(update_graphs, 15000);
     </script>
 
 {% endblock content %}

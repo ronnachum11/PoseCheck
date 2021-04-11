@@ -48,6 +48,9 @@ var horizonalLinePlugin = {
 };
 Chart.pluginService.register(horizonalLinePlugin);
 </script>
+
+<script src="https://unpkg.com/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+<script src="https://unpkg.com/@tensorflow-models/posenet@2.2.2/dist/posenet.min.js"></script>
 {% endblock head_scripts %}
 
 {% block content %}
@@ -99,42 +102,50 @@ Chart.pluginService.register(horizonalLinePlugin);
             <a href="{{ url_for('end_session', session_id=session_id) }}" class="btn btn-red btn-wide" style="margin-top: 30px">End Session</a>
         </div>
         <div class="row" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center">
-            <div id="my_photo_booth">
-                <div id="my_camera"></div>
-            
-                    <script src="{{url_for('static',filename='js/webcam.min.js')}}"></script>
+            <div class="col-md-4">
 
-            
-                    <!-- Configure a few settings and attach camera -->
-                    <script language="JavaScript">
-                        Webcam.set({
-                            // live preview size
-                            width: 640,
-                            height: 360,
-            
-                            // device capture size
-                            dest_width: 960,
-                            dest_height: 540,
-            
-                            // final cropped size
-                            crop_width: 960,
-                            crop_height: 540,
-            
-                            // format and quality
-                            image_format: 'jpeg',
-                            jpeg_quality: 90,
-            
-                            // flip horizontal (mirror mode)
-                            flip_horiz: true
-                        });
-                        Webcam.attach( '#my_camera' );
-                    </script>
+            </div>
+            <div class="col-md-4">
+                <div id="my_photo_booth">
+                    <div id="my_camera"></div>
+                
+                        <script src="{{url_for('static',filename='js/webcam.min.js')}}"></script>
+    
+                
+                        <!-- Configure a few settings and attach camera -->
+                        <script language="JavaScript">
+                            Webcam.set({
+                                // live preview size
+                                width: 640,
+                                height: 360,
+                
+                                // device capture size
+                                dest_width: 960,
+                                dest_height: 540,
+                
+                                // final cropped size
+                                crop_width: 960,
+                                crop_height: 540,
+                
+                                // format and quality
+                                image_format: 'jpeg',
+                                jpeg_quality: 90,
+                
+                                // flip horizontal (mirror mode)
+                                flip_horiz: true
+                            });
+                            Webcam.attach( '#my_camera' );
+                        </script>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <img id='pose-image' crossorigin="anonymous" />
+                <canvas id="myCanvas" width="700" height="393"></canvas>
             </div>
         </div>
     </div>
 
     <script language="JavaScript">
-    
         function save_photo() {
             $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
@@ -149,7 +160,7 @@ Chart.pluginService.register(horizonalLinePlugin);
                 contentType : "application/json"
             });
 
-
+            // update_pose_image(data_uri)
     
             } );
         }
@@ -160,6 +171,61 @@ Chart.pluginService.register(horizonalLinePlugin);
         }
         setInterval(save_photo, 7000)
         setInterval(update_graphs, 15000);
-    </script>
+
+        function update_pose_image() {
+            Webcam.snap( function(data_uri) {
+
+                console.log(data_uri)
+                if(data_uri != ""){
+                    // ctx.clearRect(0,0 c.width, c.height);
+                    $("#pose-image").attr("src", data_uri);
+
+                    var flipHorizontal = false;
+                    var cutoff = 0.75;
+
+                    var imageElement = document.getElementById('pose-image');
+                    var c = document.getElementById("myCanvas");
+                    c.style.position = "absolute";
+                    c.style.left = imageElement.offsetLeft;
+                    c.style.top = imageElement.offsetTop;
+                    var ctx = c.getContext("2d");
+
+                    posenet.load().then(function(net) {
+                    const pose = net.estimateSinglePose(imageElement, {
+                        flipHorizontal: true
+                    });
+                    return pose;
+                    }).then(function(pose){
+                    for(var i = 0; i < 17; i++) {
+                        if(pose['keypoints'][i]['score'] > cutoff) {
+                        ctx.beginPath();
+                        ctx.arc(pose['keypoints'][i]['position']['x'], pose['keypoints'][i]['position']['y'], 5, 0, Math.PI * 2);
+                        ctx.fillStyle = "blue";
+                        ctx.fill();
+                        }
+                    } 
+                    var connections = {5:[6,7,11],6:[8,12],7:[9],8:[10],11:[12,13],12:[14],13:[15],14:[16]};
+                    for(var key in connections) {
+                        var start = parseInt(key);
+                        if(pose['keypoints'][start]['score'] > cutoff) {
+                        var ends = connections[key];
+                        for(var i = 0; i < ends.length; i++) {
+                            if(pose['keypoints'][ends[i]]['score'] > cutoff) {
+                            ctx.beginPath();
+                            ctx.moveTo(pose['keypoints'][start]['position']['x'],pose['keypoints'][start]['position']['y']);
+                            ctx.lineTo(pose['keypoints'][ends[i]]['position']['x'],pose['keypoints'][ends[i]]['position']['y']);
+                            ctx.strokeStyle = "blue";
+                            ctx.stroke();
+                            }
+                        }
+                        }
+                    }
+                })
+                }
+            } );
+        }
+
+        // setInterval(update_pose_image, 300);
+      </script>
 
 {% endblock content %}

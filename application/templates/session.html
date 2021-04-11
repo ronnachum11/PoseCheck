@@ -101,13 +101,10 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class="row" style="width: 100%">
             <a href="{{ url_for('end_session', session_id=session_id) }}" class="btn btn-red btn-wide" style="margin-top: 50px">End Session</a>
         </div>
-        <div class="row" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center">
-            <div class="col-md-4">
-
-            </div>
-            <div class="col-md-4">
+        <div class="row" style="margin-top: 30px; width: 100%">
+            <div class="col-md-6" style="display: flex; align-items: center; justify-content: center;">
                 <div id="my_photo_booth">
-                    <div id="my_camera"></div>
+                    <div id="my_camera" style="border-radius: 15px"></div>
                 
                         <script src="{{url_for('static',filename='js/webcam.min.js')}}"></script>
     
@@ -138,9 +135,9 @@ Chart.pluginService.register(horizonalLinePlugin);
                         </script>
                 </div>
             </div>
-            <div class="col-md-4">
-                <img id='pose-image' crossorigin="anonymous" />
-                <canvas id="myCanvas" width="700" height="393"></canvas>
+            <div class="col-md-6" style="display: flex; align-items: center; justify-content: center;">
+                <img id='pose-image' crossorigin="anonymous" style="border-radius: 15px"/>
+                <canvas id="myCanvas" width="640" height="360"></canvas>
             </div>
         </div>
     </div>
@@ -160,7 +157,7 @@ Chart.pluginService.register(horizonalLinePlugin);
                 contentType : "application/json"
             });
 
-            // update_pose_image(data_uri)
+            setInterval(update_pose_image, 100)
     
             } );
         }
@@ -175,28 +172,33 @@ Chart.pluginService.register(horizonalLinePlugin);
 
         function update_pose_image() {
             Webcam.snap( function(data_uri) {
-
-                console.log(data_uri)
-                if(data_uri != ""){
-                    // ctx.clearRect(0,0 c.width, c.height);
-                    $("#pose-image").attr("src", data_uri);
+                image_data = data_uri
+                
+                //console.log(data_uri)
+                if(image_data != ""){
+                    $("#pose-image").attr("src", image_data);
 
                     var flipHorizontal = false;
-                    var cutoff = 0.75;
+                    var cutoff = 0.3;
 
                     var imageElement = document.getElementById('pose-image');
+                    imageElement.width = 640;
+                    imageElement.height = 360;
                     var c = document.getElementById("myCanvas");
                     c.style.position = "absolute";
                     c.style.left = imageElement.offsetLeft;
                     c.style.top = imageElement.offsetTop;
                     var ctx = c.getContext("2d");
+                    var img = ctx.createImageData(imageElement.width, imageElement.height);
 
                     posenet.load().then(function(net) {
                     const pose = net.estimateSinglePose(imageElement, {
-                        flipHorizontal: true
+                        flipHorizontal: false
                     });
                     return pose;
                     }).then(function(pose){
+                    ctx.clearRect(0,0, c.width, c.height);
+                    ctx.putImageData(img, 0, 0);
                     for(var i = 0; i < 17; i++) {
                         if(pose['keypoints'][i]['score'] > cutoff) {
                         ctx.beginPath();
@@ -221,6 +223,7 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }
                         }
                     }
+                    //console.log(pose);
                 })
                 }
             } );

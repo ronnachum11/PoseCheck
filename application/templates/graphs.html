@@ -1,61 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="main.css">
-    <!--These two scripts must be here-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script> 
-    <script type="text/javascript">
-    var horizonalLinePlugin = {
-  afterDraw: function(chartInstance) {
-    var yScale = chartInstance.scales["y-axis-0"];
-    var canvas = chartInstance.chart;
-    var ctx = canvas.ctx;
-    var index;
-    var line;
-    var style;
-    if (chartInstance.options.horizontalLine) {
-      for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
-        line = chartInstance.options.horizontalLine[index];
-        if (!line.style) {
-          style = "rgba(169,169,169, .6)";
-        } else {
-          style = line.style;
-        }
-        if (line.y) {
-          yValue = yScale.getPixelForValue(line.y);
-        } else {
-          yValue = 0;
-        }
-        ctx.lineWidth = 3;
-        if (yValue) {
-          ctx.beginPath();
-          ctx.moveTo(0, yValue);
-          ctx.lineTo(canvas.width, yValue);
-          ctx.strokeStyle = style;
-          ctx.stroke();
-        }
-        if (line.text) {
-          ctx.fillStyle = style;
-          ctx.fillText(line.text, 0, yValue + ctx.lineWidth);
-        }
-      }
-      return;
-    };
-  }
-};
-Chart.pluginService.register(horizonalLinePlugin);
-</script>
-</head>
-<body>
     <div class = "row">
         <div class="col-md-6">
             <div class="content-div">
                 <h2>Screen Proximity</h2>
-                <canvas id="proximity" width="200" height="100"></canvas>
+                <canvas id="proximity" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("proximity");
                     var values = {{proximity_data}};
@@ -77,7 +24,8 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
@@ -85,9 +33,23 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
-                    }
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }                    }
                     });
                 </script>
             </div>                  
@@ -95,7 +57,7 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class = "col-md-6">
             <div class="content-div">
                 <h2>Slump Detection</h2>
-                <canvas id="slump" width="200" height="100"></canvas>
+                <canvas id="slump" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("slump");
                     var values = {{slump_data}};
@@ -117,7 +79,8 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
@@ -125,9 +88,23 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
-                    }
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }                    }
             
                     });
                 </script>
@@ -138,7 +115,7 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class="col-md-6">
             <div class="content-div">
                 <h2>Forward Tilt</h2>
-                <canvas id="forward-tilt" width="200" height="100"></canvas>
+                <canvas id="forward-tilt" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("forward-tilt");
                     var values = {{forward_tilt_data}};
@@ -160,16 +137,33 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
-                        "text": "threshold"
+                        "text": "threshold",
+                        "fontSize": 14
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }
                     }
                     });
                 </script>
@@ -178,7 +172,7 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class="col-md-6">
             <div class="content-div">
                 <h2>Head Tilt</h2>
-                <canvas id="head-tilt" width="200" height="100"></canvas>
+                <canvas id="head-tilt" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("head-tilt");
                     var values = {{head_tilt_data}};
@@ -200,7 +194,8 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
@@ -208,9 +203,23 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
-                    }
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }                    }
             
                     });
                 </script>
@@ -221,7 +230,7 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class="col-md-6">
             <div class="content-div">
                 <h2>Shoulder Tilt</h2>
-                <canvas id="shoulder-tilt" width="200" height="100"></canvas>
+                <canvas id="shoulder-tilt" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("shoulder-tilt");
                     var values = {{shoulder_tilt_data}};
@@ -243,7 +252,8 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
@@ -251,9 +261,23 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
-                    }
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }                    }
                     });
                 </script>
             </div>
@@ -261,7 +285,7 @@ Chart.pluginService.register(horizonalLinePlugin);
         <div class="col-md-6">
             <div class="content-div">
                 <h2>Shoulder Width</h2>
-                <canvas id="shoulder-width" width="200" height="100"></canvas>
+                <canvas id="shoulder-width" style="width: 90%; height: 90%"></canvas>
                 <script>
                     var ctx = document.getElementById("shoulder-width");
                     var values = {{shoulder_width_data}};
@@ -283,7 +307,8 @@ Chart.pluginService.register(horizonalLinePlugin);
                         ]
                     },
                     options: {
-                        responsive: false,
+                        responsive: true, 
+                        maintainAspectRatio: false,
                         "horizontalLine": [{
                         "y": threshold,
                         "style": "rgba(255, 0, 0, .4)",
@@ -291,15 +316,26 @@ Chart.pluginService.register(horizonalLinePlugin);
                         }, {
                         "y": values[0],
                         "style": "rgba(0, 255, 0, .4)",
-                        "text": "base"
-                        }]
-                    }
+                        "text": "base",
+                        "fontSize": 14
+                        }],
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 16,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontColor: "white",
+                                    fontSize: 14,
+                                }
+                            }]
+                        }                    }
                     });
                 </script>
             </div>
         </div>
     </div>
-    </div>
-
-</body>
-</html>
+</div>

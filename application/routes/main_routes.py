@@ -56,7 +56,7 @@ def session():
     data = current_session.to_dict()
     proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
 
-    return render_template("session.html", session_id=session_id,proximity_data = proximity_data, slump_data = slump_data, forward_tilt_data = forward_tilt_data, head_tilt_data = head_tilt_dada, shoulder_tilt_data = shoulder_tilt_data, shoulder_width_data = shoulder_width_data)
+    return render_template("session.html", session_id=session_id,proximity_data = proximity_data, slump_data = slump_data, forward_tilt_data = forward_tilt_data, head_tilt_data = head_tilt_data, shoulder_tilt_data = shoulder_tilt_data, shoulder_width_data = shoulder_width_data)
     
 
 @login_required
@@ -110,6 +110,21 @@ def logout():
 @app.route('/photo')
 def photo():
     return render_template('photo.html')
+
+@app.route('/update_graphs/<string:session_id>')
+def update_graphs(session_id):
+    if not current_user.is_authenticated:
+        return {"Status": "Error"}
+
+    session = current_user.get_session_by_id(session_id)
+    print(session_id)
+    data = session.to_dict()
+    proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
+
+    print(len(proximity_data))
+
+    return render_template("graphs.html", proximity_data=proximity_data, slump_data=slump_data, forward_tilt_data=forward_tilt_data, head_tilt_data=head_tilt_data, shoulder_tilt_data=shoulder_tilt_data, shoulder_width_data=shoulder_width_data)
+
 
 @app.route('/photo_analysis/<string:session_id>', methods=["GET", "POST"])
 def photo_cap(session_id):

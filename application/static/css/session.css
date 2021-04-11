@@ -6,7 +6,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
 
-#main-div {
+#graphs {
     display: flex;
     flex-direction: column;
     align-items: center;

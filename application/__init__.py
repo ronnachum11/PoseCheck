@@ -6,6 +6,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from dotenv import load_dotenv
+import logging
+log = logging.getLogger('werkzeug')
+log.disabled = True
 
 from application.classes.db import DB
 from config import load_config

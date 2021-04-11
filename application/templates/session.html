@@ -6,31 +6,48 @@
 {% endblock page_styles %}
 
 {% block content %}
-    <script>
+    <!-- <script>
         window.onbeforeunload = function() {
             return true;
         };
-    </script>
+    </script> -->
 
-    <h1>Your Study Session</h1>
+    <h1>Your Posture Session</h1>
     <h3 style="margin-bottom: -25px">{{ header }}</h3>
     <div id="main-div">
         <div class = "row">
             <div class="col-md-6">
                 <div class="content-div">
-
+                    <h2>Screen Proximity</h2>
                 </div>                  
             </div>
             <div class = "col-md-6">
                 <div class="content-div">
-
+                    <h2>Slump Detection</h2>
                 </div>
             </div>
         </div>
         <div class = "row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="content-div">
-
+                    <h2>Forward Tilt</h2>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Head Tilt</h2>
+                </div>
+            </div>
+        </div>
+        <div class = "row">
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Shoulder Tilt</h2>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="content-div">
+                    <h2>Shoulder Width</h2>
                 </div>
             </div>
         </div>
@@ -50,16 +67,16 @@
                     <script language="JavaScript">
                         Webcam.set({
                             // live preview size
-                            width: 320,
-                            height: 240,
+                            width: 640,
+                            height: 360,
             
                             // device capture size
-                            dest_width: 640,
-                            dest_height: 480,
+                            dest_width: 960,
+                            dest_height: 540,
             
                             // final cropped size
-                            crop_width: 640,
-                            crop_height: 480,
+                            crop_width: 960,
+                            crop_height: 540,
             
                             // format and quality
                             image_format: 'jpeg',
@@ -113,7 +130,7 @@
                 // shut down camera, stop capturing
                 // Webcam.reset();
     
-                $.getJSON($SCRIPT_ROOT + '/_photo_cap', {
+                $.getJSON($SCRIPT_ROOT + '/_photo_cap/{{ session_id }}', {
                     photo_cap: data_uri,
                 },function(data){
                     var response = data.response;
@@ -122,7 +139,7 @@
             } );
         }
 
-        setInterval(save_photo, 10000)
+        setInterval(save_photo, 5000)
     </script>
 
 {% endblock content %}

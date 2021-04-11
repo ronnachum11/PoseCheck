@@ -92,7 +92,7 @@ def session(session_id):
 def account():
     user = current_user
     sessions = current_user.sessions
-    info = [[session.id, session.start_time.strftime('%I:%M')] for session in sessions]
+    info = [[session.id, session.start_time.replace(hour = (session.start_time.hour+4)%24).strftime('%I:%M')] for session in sessions]
     return render_template("account.html", user=user, sessions=sessions, info=info)
 
 @app.route("/register", methods=["GET", "POST"])

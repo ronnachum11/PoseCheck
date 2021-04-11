@@ -47,13 +47,16 @@ def end_session(session_id):
 
 @app.route("/session", methods=["GET", "POST"])
 def session():
-    if current_user.is_authenticated:
-        current_session = Session(id=str(ObjectId()), start_time=datetime.now())
-        current_user.add_session(current_session)
-        session_id = current_session.id
-    else:
+    if not current_user.is_authenticated:
         return redirect(url_for('home'))
-    return render_template("session.html", session_id=session_id)
+
+    current_session = Session(id=str(ObjectId()), start_time=datetime.now())
+    current_user.add_session(current_session)
+    session_id = current_session.id
+    data = current_session.to_dict()
+    proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
+
+    return render_template("session.html", session_id=session_id,proximity_data = proximity_data, slump_data = slump_data, forward_tilt_data = forward_tilt_data, head_tilt_data = head_tilt_dada, shoulder_tilt_data = shoulder_tilt_data, shoulder_width_data = shoulder_width_data)
     
 
 @login_required

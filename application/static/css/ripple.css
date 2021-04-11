@@ -7,7 +7,7 @@
 position: absolute;
 border-radius: 50%;
 background: white;
-animation: ripple 30s infinite;
+animation: ripple 15s infinite;
 box-shadow: 0px 0px 1px 0px #508fb9;
 }
 
@@ -70,8 +70,8 @@ opacity: 0.9;
     transform: scale(0.2);
 }
 
-50%{
-    transform: scale(0.9);
+70%{
+    transform: scale(1.0);
 }
 
 100%{

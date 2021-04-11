@@ -38,7 +38,7 @@
 
 <body>
     <header class="site-header" style="padding-bottom: 10px; padding-top: -100px">
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background: rgba(0, 0, 0, 0); margin: 10px">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background: linear-gradient(90deg, rgb(0, 43, 161) 0%, rgb(0, 74, 246) 30%, rgb(41, 105, 255) 100%); width=100vw">
             <a id="logo_title" class="navbar-brand" href="{{ url_for('home', _anchor='home') }}">
                 <!-- <img src=""> -->
                 PoseCheck
@@ -51,10 +51,12 @@
                 {% if not current_user.is_authenticated %}
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" href="{{ url_for('home', _anchor='about') }}">About</a>
+                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Explanation</a>
                     </div>
                 {% else %}
                     <div class="navbar-nav">
                         <a class="nav-item nav-link" href="{{ url_for('home', _anchor='about') }}">About</a>
+                        <a class="nav-item nav-link" href="{{ url_for('features') }}">Explanation</a>
                         <a class="nav-item nav-link" href="{{ url_for('start_session') }}">Check My Pose!</a>
                     </div>
                 {% endif %}

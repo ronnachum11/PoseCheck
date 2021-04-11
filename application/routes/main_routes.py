@@ -136,6 +136,9 @@ def update_graphs(session_id):
 
     return render_template("graphs.html", proximity_data=proximity_data, slump_data=slump_data, forward_tilt_data=forward_tilt_data, head_tilt_data=head_tilt_data, shoulder_tilt_data=shoulder_tilt_data, shoulder_width_data=shoulder_width_data)
 
+@app.route('/features')
+def features():
+    return redirect(url_for('home'))
 
 @app.route('/photo_analysis/<string:session_id>', methods=["GET", "POST"])
 def photo_cap(session_id):
@@ -169,24 +172,23 @@ def photo_cap(session_id):
     if len(data['base_key_points']) == 0:
         current_user.update_session(session_id, **{"base_key_points": getKeyPoints(img)})
         # print("BASE KEY POINTS SET")
-    else:
-        proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
-        flags = data['flags']
+    proximity_data, slump_data, forward_tilt_data, head_tilt_data, shoulder_tilt_data, shoulder_width_data = data['proximity'], data['slump'], data['forward_tilt'], data['head_tilt'], data['shoulder_tilt'], data['shoulder_width']
+    flags = data['flags']
 
-        key_points = getKeyPoints(img)
-        posture_checker = CheckPosture(1, key_points, data['base_key_points'], sensitivity_dict)
-    
-        proximity_flag, proximity_val = posture_checker.check_proximity()
-        slump_flag, slump_val = posture_checker.check_slump()
-        forward_tilt_flag, forward_tilt_val = posture_checker.check_forward_tilt()
-        head_tilt_flag, head_tilt_val = posture_checker.check_head_tilt()
-        shoulder_tilt_flag, shoulder_tilt_val = posture_checker.check_shoulder_tilt()
-        shoulder_width_flag, shoulder_width_val = posture_checker.check_shoulder_width()
+    key_points = getKeyPoints(img)
+    posture_checker = CheckPosture(1, key_points, data['base_key_points'], sensitivity_dict)
 
-        proximity_data.append(proximity_val); slump_data.append(slump_val); forward_tilt_data.append(forward_tilt_val), head_tilt_data.append(head_tilt_val), shoulder_tilt_data.append(shoulder_tilt_val), shoulder_width_data.append(shoulder_tilt_val)
-        flags.append([proximity_flag, slump_flag, forward_tilt_flag, head_tilt_flag, shoulder_tilt_flag, shoulder_width_flag])
+    proximity_flag, proximity_val = posture_checker.check_proximity()
+    slump_flag, slump_val = posture_checker.check_slump()
+    forward_tilt_flag, forward_tilt_val = posture_checker.check_forward_tilt()
+    head_tilt_flag, head_tilt_val = posture_checker.check_head_tilt()
+    shoulder_tilt_flag, shoulder_tilt_val = posture_checker.check_shoulder_tilt()
+    shoulder_width_flag, shoulder_width_val = posture_checker.check_shoulder_width()
 
-        current_user.update_session(session_id, **{"proximity": proximity_data, "slump": slump_data, "forward_tilt": forward_tilt_data, "head_tilt": head_tilt_data, "shoulder_tilt": shoulder_tilt_data, "shoulder_width": shoulder_width_data, "flags": flags})
+    proximity_data.append(proximity_val); slump_data.append(slump_val); forward_tilt_data.append(forward_tilt_val), head_tilt_data.append(head_tilt_val), shoulder_tilt_data.append(shoulder_tilt_val), shoulder_width_data.append(shoulder_tilt_val)
+    flags.append([proximity_flag, slump_flag, forward_tilt_flag, head_tilt_flag, shoulder_tilt_flag, shoulder_width_flag])
+
+    current_user.update_session(session_id, **{"proximity": proximity_data, "slump": slump_data, "forward_tilt": forward_tilt_data, "head_tilt": head_tilt_data, "shoulder_tilt": shoulder_tilt_data, "shoulder_width": shoulder_width_data, "flags": flags})
 
         # print("NEW FRAME")
         # print("Proximity:", proximity_flag, proximity_val)

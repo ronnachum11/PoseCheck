@@ -98,10 +98,10 @@ Chart.pluginService.register(horizonalLinePlugin);
     </div>
 
         <!-- <h5>Graphs Last Updated: 37s ago</h5> -->
-        <div class="row">
-            <a href="{{ url_for('end_session', session_id=session_id) }}" class="btn btn-red btn-wide" style="margin-top: 30px">End Session</a>
+        <div class="row" style="width: 100%">
+            <a href="{{ url_for('end_session', session_id=session_id) }}" class="btn btn-red btn-wide" style="margin-top: 50px">End Session</a>
         </div>
-        <div class="row" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center">
+        <div class="row" style="margin-top: 30px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center">
             <div class="col-md-4">
 
             </div>
@@ -169,8 +169,9 @@ Chart.pluginService.register(horizonalLinePlugin);
         function update_graphs() {
             $("#graphs").load("/update_graphs/" + "{{ session_id|safe }}");
         }
+        update_graphs()
         setInterval(save_photo, 7000)
-        setInterval(update_graphs, 15000);
+        setInterval(update_graphs, 7500);
 
         function update_pose_image() {
             Webcam.snap( function(data_uri) {

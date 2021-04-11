@@ -8,6 +8,7 @@
 {% block content %}
     <div id="start-session-div">
         <h1>Ready to Go?</h1>
-        <a href="{{ url_for('session_setup') }}" class="btn btn-light btn-wide" style="color: black; margin: 0">Start Session</a>
+        <h3>Make sure to get into a neutral position, as the first frame captured is used as a baseline.</h3>
+        <a href="{{ url_for('session_setup') }}" class="btn btn-light btn-wide" style="color: black; margin: 0; margin-top: 20px">Start Session</a>
     </div>
 {% endblock content %}

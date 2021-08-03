@@ -84,6 +84,7 @@ def session(session_id):
     if current_session is None:
         return redirect(url_for('home'))
 
+    return render_template("removed_session.html")
     return render_template("session.html", session_id=session_id)
     
 
